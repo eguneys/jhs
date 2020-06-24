@@ -1,11 +1,32 @@
 const CSI = '\x1b[';
 
+const SGR = (...n) => `${CSI} ${n.join(';')} m`;
+
+const SGR_Style = {
+  Reset: `49;0`,
+  Bold: `1`,
+  Italic: `3`,
+  Underline: `4`,
+  Foreground: {
+    Black: `38;5;232`,
+    White: `38;5;231`,
+  },
+  Background: {
+    Black: `48;5;232`,
+    White: `48;5;231`
+  }
+};
+
 function Term() {
 
   let buftext = '';
 
   const pushText = _ => buftext += _;
   const clearText = () => buftext = '';
+
+  this.style = (...sgrs) => {
+    pushText(SGR(...sgrs));
+  };
 
   this.text = (text) => {
     pushText(text);
@@ -40,4 +61,8 @@ function Term() {
 }
 
 
-module.exports = Term;
+module.exports = {
+  Term,
+  SGR,
+  SGR_Style
+};

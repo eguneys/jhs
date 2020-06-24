@@ -1,5 +1,5 @@
 let rect = require('./rect');
-let Term = require('./term');
+let { Term, SGR, SGR_Style } = require('./term');
 
 const withTerm = fTermRender => {
   let term = new Term();
@@ -80,6 +80,15 @@ const renderStatus = withTerm(term =>
     let { white, text } = model;
 
     term.moveTo(leftMargin, 1);
+
+    if (white) {
+      term.style(SGR_Style.Background.White,
+                 SGR_Style.Foreground.Black);
+    } else {
+      term.style(SGR_Style.Foreground.White,
+                 SGR_Style.Background.Black);
+    }
+
     term.text(`  ${text}  \n`);
   }
 );
