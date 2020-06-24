@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "start": "node src/main.js"
+  },
+  "dependencies": {
+    "terminal-kit": "^1.35.7"
+  }
+}
