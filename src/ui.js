@@ -12,6 +12,55 @@ const withTerm = fTermRender => {
   };
 };
 
+const renderOpponent = withTerm(term =>
+  (ctx, player) => {
+
+    let { bs } = ctx;
+
+    let { opponent: bsPlayer } = bs;
+
+    renderPlayerBase(term, bsPlayer, player);
+
+  });
+
+const renderPlayer = withTerm(term =>
+  (ctx, player) => {
+
+    let { bs } = ctx;
+
+    let { player: bsPlayer } = bs;
+
+    renderPlayerBase(term, bsPlayer, player);
+
+  });
+
+const renderPlayerBase = (term, bs, player) => {
+
+  if (!player) {
+    return;
+  }
+  
+  term.moveTo(bs.x, bs.y);
+
+  let name = player.aiLevel ? `Stockfish ${player.aiLevel}`:player.name;
+
+  let rating = player.rating ? `(${player.rating})`:'';
+  
+  term.text(name);
+  term.text(rating);
+
+};
+
+const renderBoard = withTerm(term =>
+  (ctx, board) => {
+    let { bs } = ctx;
+
+    let { board: bsBoard } = bs;
+    
+    term.moveTo(bsBoard.x, bsBoard.y);
+    term.text(board.ascii());
+  });
+
 const renderBackground = withTerm(term => 
   (ctx) => {
     let { bs } = ctx;
@@ -39,6 +88,13 @@ const renderBackground = withTerm(term =>
 
   }
 );
+
+const renderAccount = withTerm(term =>
+  (ctx, username) => {
+    
+    
+
+  });
 
 const renderChat = withTerm(term =>
   (ctx, messages) => {
@@ -234,7 +290,11 @@ function renderWrapText(term, text, bounds) {
 }
 
 module.exports = {
+  renderBoard,
+  renderPlayer,
+  renderOpponent,
   renderBackground,
+  renderAccount,
   renderStatus,
   renderInput,
   renderHelp,

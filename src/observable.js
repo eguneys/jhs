@@ -3,13 +3,23 @@ function Observable(instance) {
   let subs = [];
 
   const notify = () => {
-    subs.forEach(_ => _(instance));
+    setTimeout(() => {
+      subs.forEach(_ => _(instance));
+    }, 0);
   };
 
   this.touch = () => notify();
 
   this.apply = (fn) => {
     return fn(instance);
+  };
+
+  this.set = (fn) => {
+    instance = fn(instance);
+
+    notify();
+
+    return instance;
   };
 
   this.mutate = (fn) => {
