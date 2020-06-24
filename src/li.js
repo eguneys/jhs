@@ -1,7 +1,7 @@
 let observable = require('./observable');
 let Lichess = require('./lichess');
 
-let ChessGame = require('./chessgame');
+let { ChessGame, displayData: chessDisplayData } = require('./chessgame');
 let Pov = require('./pov');
 
 const loginFailed = status => `Login failed: ${status}\n Probably bad token`;
@@ -11,6 +11,8 @@ const gameFailedTryClassical = error => `${error}\n Try Classical or Rapid inste
 const texts = {
   'gameinprogress': 'game in progress.'
 };
+
+const fId = _ => _;
 
 function Li(uiapp) {
   let token;
@@ -42,6 +44,7 @@ function Li(uiapp) {
   this.oPlayer = this.povOPlayers.player;
   this.oOpponent = this.povOPlayers.opponent;
 
+
   const effectPlayerPov = (white, black, isWhite) => {
 
     this.povOPlayers.pov(_ => _.set(_ => white),
@@ -50,12 +53,32 @@ function Li(uiapp) {
 
   };
 
+  this.povDisplayData = new Pov(observable(null),
+                                observable(null));
+
+  this.oDisplayPlayer = this.povDisplayData.player;
+
+  const effectDisplayDataPov = (isWhite) => {
+    this.povDisplayData.pov(_ =>
+      _.set(_ => 
+        chessDisplayData.white),
+      _ => _.set(_ =>
+        chessDisplayData.black));
+  };
+
   let oGame = this.oGame = observable(new ChessGame());
 
   const effectSetFenState = (fen, state) => {
     oGame.mutate(_ => {
       _.fen(fen);
       _.state(state);
+    });
+  };
+
+  this.subOGameWithDisplayData = fn => {
+    oGame.sub(game => {
+      let displayPlayer = this.oDisplayPlayer.apply(fId);
+      fn(game, displayPlayer);      
     });
   };
 
@@ -91,9 +114,13 @@ function Li(uiapp) {
 
         effectSetFenState(initialFen, state);
 
+        let povIsWhite = white.name === oAccountName();
+
         effectPlayerPov(white,
                         black, 
-                        white.name === oAccountName());
+                        povIsWhite);
+        
+        effectDisplayDataPov(povIsWhite);
 
         effectAddGameChat(gameId,
                           texts.gameinprogress);

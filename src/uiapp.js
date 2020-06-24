@@ -86,10 +86,10 @@ let bs = (() => {
 
   let gameStatus = rect(leftMargin, 1, 23, 1);
 
-  let board = rect(0, 
+  let board = rect(leftMargin, 
                    gameStatus.y1 + uiMargin,
-                   30,
-                   10);                   
+                   26,
+                   9);                   
 
   let userInput = rect(leftMargin, board.y1 + uiMargin,
                        board.w,
@@ -98,7 +98,7 @@ let bs = (() => {
   let opponent = rect(userInput.x1 + uiMargin,
                       uiMargin,
                       20,
-                      10);
+                      9);
 
   let player = rect(opponent.x,
                     opponent.y1 + uiMargin,
@@ -307,7 +307,8 @@ function init() {
     .sub(inApp(_ => 
       ui.renderOpponent(ctx, _)));
 
-  li.oGame.sub(inApp(_ => ui.renderBoard(ctx, _)));
+  li.subOGameWithDisplayData(
+    inApp((...args) => ui.renderBoard(ctx, ...args)));
 
 }
 

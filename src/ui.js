@@ -1,6 +1,8 @@
 let rect = require('./rect');
 let { Term, SGR, SGR_Style } = require('./term');
 
+let cu = require('./chessutil');
+
 const withTerm = fTermRender => {
   let term = new Term();
 
@@ -51,14 +53,73 @@ const renderPlayerBase = (term, bs, player) => {
 
 };
 
+const unicodePieces = {
+  'r': '♜',
+  'n': '♞',
+  'b': '♝',
+  'q': '♛',
+  'k': '♚',
+  'p': '♙',
+};
+
 const renderBoard = withTerm(term =>
-  (ctx, board) => {
+  (ctx, board, displayData) => {
     let { bs } = ctx;
 
     let { board: bsBoard } = bs;
-    
-    term.moveTo(bsBoard.x, bsBoard.y);
-    term.text(board.ascii());
+
+    let row = 0,
+        column = 0;
+
+    for (let square of displayData.iteratorSquares) {
+      let rank = cu.rankOf(square);
+      let file = cu.fileOf(square);
+
+      if (column === 0) {
+        term.moveTo(bsBoard.x, bsBoard.y + row);
+        term.text(`${rank} `);
+      }
+
+      if (row === 7) {
+        term.moveTo(bsBoard.x + 2 + column * 3 + 1,
+                    bsBoard.y + row + 1);
+        term.text(`${file}`);
+      }
+
+      term.moveTo(bsBoard.x + 2 + column * 3, bsBoard.y + row);
+      column++;
+      if (column >= 8) {
+        row++;
+        column = 0;
+      }
+
+      let squareColor = board.squareColor(square);
+
+      if (squareColor === 'light') {
+        term.style(SGR_Style.Background.Light);
+      } else {
+        term.style(SGR_Style.Background.Dark);
+      }
+
+      let piece = board.piece(square);
+
+      if (!piece) {
+        term.text('   ');
+      } else {
+
+        let { type, color } = piece;
+
+        if (color === 'b') {
+          term.style(SGR_Style.Foreground.Black);
+        } else {
+          term.style(SGR_Style.Foreground.White);
+        }
+
+        term.text(` ${unicodePieces[type]} `);
+
+      }
+      term.reset();
+    }
   });
 
 const renderBackground = withTerm(term => 

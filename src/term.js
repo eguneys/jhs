@@ -8,10 +8,12 @@ const SGR_Style = {
   Italic: `3`,
   Underline: `4`,
   Foreground: {
-    Black: `38;5;232`,
-    White: `38;5;231`,
+    Black: `38;5;232;1`,
+    White: `38;5;231;1`,
   },
   Background: {
+    Dark: `48;5;172`,
+    Light: `48;5;215`,
     Black: `48;5;232`,
     White: `48;5;231`
   }

@@ -8,8 +8,12 @@ function Chess(fen) {
     moves.forEach(_ => chess.move(_, { sloppy: true }));
   };
 
-  this.ascii = () => {
-    return chess.ascii();
+  this.squareColor = square => {
+    return chess.square_color(square);
+  };
+
+  this.piece = square => {
+    return chess.get(square);
   };
 
 }

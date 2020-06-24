@@ -3,7 +3,12 @@ function Pov(player, opponent) {
   this.player = player;
   this.opponent = opponent;
 
-  this.pov = (white, black, isWhite) => {
+  let isWhite;
+
+  this.isWhite = () => isWhite;
+
+  this.pov = (white, black, _isWhite) => {
+    isWhite = _isWhite;
 
     if (isWhite) {
       white(player);
@@ -14,7 +19,6 @@ function Pov(player, opponent) {
     }
 
   };
-
 }
 
 module.exports = Pov;
