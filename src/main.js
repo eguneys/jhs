@@ -3,6 +3,8 @@ let rect = require('./rect');
 
 let ui = require('./ui');
 
+let commandHandlers = require('./commands');
+
 const helpText = `
 Type ? to display this help text.
 Commands
@@ -115,6 +117,26 @@ const effectUserInputBackSpace = () => {
     _.text = _.text.slice(0, _.text.length - 1));
 };
 
+const actionParseUserInput = () => {
+  let sInput = oUserInput.apply(_ => _.text);
+
+  let aInput = sInput.split(' ');
+
+  if (aInput.length > 0) {
+    
+    let cmd = aInput[0];
+    let args = aInput.slice(1, aInput.length);
+
+    let handled = commandHandlers
+        .reduce((handled, handler) =>
+          handled ? handled : handler(...args)
+          , false);
+    
+    if (!handled) {
+      effectSystemChat(`Bad command ${cmd}`);
+    }
+  }
+};
 
 
 const checkImmediateHelp = () => {
@@ -129,6 +151,7 @@ const actionUserInput = (input) => {
   case '\u0004':
   case '\r':
   case '\n':
+    actionParseUserInput();
     effectUserInputClear();
     break;
   default:

@@ -1,6 +1,6 @@
 const CSI = '\x1b[';
 
-const SGR = (...n) => `${CSI} ${n.join(';')} m`;
+const SGR = (...n) => `${CSI}${n.join(';')}m`;
 
 const SGR_Style = {
   Reset: `49;0`,
@@ -23,6 +23,10 @@ function Term() {
 
   const pushText = _ => buftext += _;
   const clearText = () => buftext = '';
+
+  this.reset = () => {
+    pushText(SGR(SGR_Style.Reset));
+  };
 
   this.style = (...sgrs) => {
     pushText(SGR(...sgrs));

@@ -50,9 +50,6 @@ const renderChat = withTerm(term =>
     if (messages.length === 0) {
       return;
     }
-    let lastMessage = messages[messages.length - 1];
-
-    let { user, text } = lastMessage;
 
     let textBounds = rect(
       chat.x + 1,
@@ -61,14 +58,26 @@ const renderChat = withTerm(term =>
       chat.h - 2
     );
 
-    if (!user) {
-      renderWrapText(term, `${text}`, textBounds);
-    } else {
-      renderWrapText(term, `${user}: ${text}`, textBounds);
-    }
+    term.eraseArea(textBounds.x,
+                   textBounds.y,
+                   textBounds.w,
+                   textBounds.h);
 
+
+    let lastMessage = messages[messages.length - 1];
+    renderChatMessage(term, lastMessage, textBounds);
   }
 );
+
+const renderChatMessage = (term, message, textBounds) => {
+  let { user, text } = message;
+
+  if (!user) {
+    renderWrapText(term, `${text}`, textBounds);
+  } else {
+    renderWrapText(term, `${user}: ${text}`, textBounds);
+  }
+};
 
 const renderStatus = withTerm(term =>
   (ctx, model) => {
@@ -90,6 +99,7 @@ const renderStatus = withTerm(term =>
     }
 
     term.text(`  ${text}  \n`);
+    term.reset();
   }
 );
 
@@ -104,11 +114,13 @@ const renderInput = withTerm(term =>
     term.eraseArea(x, y, w, 1);
     term.moveTo(x, y);
     if (!text) {
+      term.style(SGR_Style.Italic);
       term.text(`  ${placeholder}`.slice(-w));
       term.moveTo(x, y);
     } else {
       term.text(`${text}`.slice(-w));
     }
+    term.reset();
   }
 );
 
@@ -217,6 +229,8 @@ function renderWrapText(term, text, bounds) {
       term.text('-');
     }
   }
+
+  return sss.length;
 }
 
 module.exports = {
